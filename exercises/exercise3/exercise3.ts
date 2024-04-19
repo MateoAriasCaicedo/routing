@@ -1,6 +1,8 @@
 const homePagePattern = new URLPattern({ pathname: "/home" });
 const defaultPagePattern = new URLPattern({ pathname: "/" });
-const imageRequestPattern = new URLPattern({ pathname: "/assets/:name" });
+const imageRequestPattern = new URLPattern({
+  pathname: "/assets/:filename(.+\\.jpeg)",
+});
 
 async function notFoundHandler(): Promise<Response> {
   const notFoundHTML = await Deno.open("./not-found.html");
@@ -27,10 +29,7 @@ async function imageRequestHandler(url: URL): Promise<Response> {
   }
 
   try {
-    const image = await Deno.open("." + url.pathname, {
-      read: true,
-      write: false,
-    });
+    const image = await Deno.open("." + url.pathname, { read: true });
 
     return new Response(image.readable, {
       headers: { "Content-Type": "image/jpeg" },
